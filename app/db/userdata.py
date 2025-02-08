@@ -368,14 +368,13 @@ class PlaylistTable(Base):
 
     @classmethod
     def append_to_playlist(cls, id: int, trackhashes: list[str]):
-        dbtrackhashes = cls.get_trackhashes(id)
-        if not dbtrackhashes:
-            dbtrackhashes = []
+        dbtrackhashes = cls.get_trackhashes(id) or []
+        trackhashes = list(set(dbtrackhashes).union(set(trackhashes)))
 
         return cls.execute(
             update(cls)
             .where((cls.id == id) & (cls.userid == get_current_userid()))
-            .values(trackhashes=dbtrackhashes + trackhashes),
+            .values(trackhashes=trackhashes),
             commit=True,
         )
 
