@@ -1,0 +1,33 @@
+services:
+  swingmusic:
+    image: ghcr.io/swingmx/swingmusic:latest
+    container_name: swingmusic
+    volumes:
+      - /path/to/music:/music
+      - /path/to/config:/config
+    ports:
+      - "1970:1970"
+    restart: unless-stopped
+    environment:
+      - MUSIC_SPEED=1.0  # Default speed, can be overridden
+
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+    depends_on:
+      - swingmusic
+
+  db:
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: musicdb
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+volumes:
+  pgdata:
