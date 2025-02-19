@@ -169,11 +169,13 @@ def add_item_to_playlist(path: PlaylistIDPath, body: AddItemToPlaylistBody):
     """
     itemtype = body.itemtype
     itemhash = body.itemhash
-    playlist_id = path.playlistid
+    playlist_id = int(path.playlistid)
     sortoptions = body.sortoptions
 
     if itemtype == "tracks":
         trackhashes = itemhash.split(",")
+        if len(trackhashes) == 1 and trackhashes[0] in PlaylistTable.get_trackhashes(playlist_id):
+            return {"msg": "Track already exists in playlist"}, 409
     elif itemtype == "folder":
         trackhashes = get_path_trackhashes(itemhash, sortoptions.get("tracksortby") or 'default', sortoptions.get("tracksortreverse") or False)
     elif itemtype == "album":
@@ -183,7 +185,7 @@ def add_item_to_playlist(path: PlaylistIDPath, body: AddItemToPlaylistBody):
     else:
         trackhashes = []
 
-    PlaylistTable.append_to_playlist(int(playlist_id), trackhashes)
+    PlaylistTable.append_to_playlist(playlist_id, trackhashes)
     return {"msg": "Done"}, 200
 
 
