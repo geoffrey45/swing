@@ -76,7 +76,7 @@ Here's a sample Docker compose file:
 ```yaml
 services:
   swingmusic:
-    image: swingmusic
+    image: ghcr.io/swingmx/swingmusic:latest
     container_name: swingmusic
     volumes:
       - /path/to/music:/music
